@@ -224,6 +224,73 @@
                 showNotification('Error al actualizar producto: ' + error.message, 'error');
             }
         }
+
+        //Eliminar producto
+        async function deleteProduct(id) {
+            if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const result = await response.json();
+
+                if (result.status === 200) {
+                    showNotification('Producto eliminado exitosamente', 'success');
+                    loadProducts();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+
+            } catch (error) {
+                showNotification('Error al eliminar producto: ' + error.message, 'error');
+            }
+        }
+
+        //Cancelar edición
+        function cancelEdit() {
+            resetForm();
+        }
+
+        //Obtener datos del formulario
+        function getFormData() {
+            return {
+                name: document.getElementById('name').value.trim(),
+                price: parseFloat(document.getElementById('price').value),
+                description: document.getElementById('description').value.trim()
+            };
+        }
+
+        //Resetear formulario
+        function resetForm() {
+            document.getElementById('product-name').reset();
+            document.getElementById('product-id').value = '';
+
+            document.getElementById('form-title').textContent = 'Crear nuevo producto';
+            document.getElementById('btn-submit').textContent = 'Guardar';
+            document.getElementById('btn-cancel').classList.add('hidden');
+        }
+
+        // Mostrar notificaciones
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'mb-4 p-4 rounded-lg text-center font-medium';
+            if (type === 'success') {
+                notification.classList.add('bg-green-100', 'text-green-800');
+            } else if (type === 'error') {
+                notification.classList.add('bg-red-100', 'text-red-800');
+            }
+            notification.classList.remove('hidden');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 4000);
+        }
     </script>
 
 </body>

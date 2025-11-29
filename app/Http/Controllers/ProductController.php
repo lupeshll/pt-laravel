@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class ProductsController extends Controller
+class ProductController extends Controller
 {
     //Listar productos
     public function index()
