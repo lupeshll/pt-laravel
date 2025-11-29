@@ -66,13 +66,135 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody id="product-table-body">
+                <tbody id="products-table">
                     <!-- Las filas de productos se agregarán aquí dinámicamente -->
                 </tbody>
             </table>
         </div>
     </div>
 
+    <script>
+        const API_URL = '/api/products';
+        document.addEventListener('DOMContentLoaded', function() {
+            //Cargar productos al iniciar
+            loadProducts();
+
+        });
+
+        //Manejos de envió de formulario
+        document.getElementById('product-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = document.getElementById('product-id').value;
+            if (productId) {
+                updateProduct(productId);
+            } else {
+                createProduct();
+            }
+        });
+
+        //
+        async function loadProducts() {
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+
+                if (result.status === 200) {
+                    renderProducts(result.data);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+
+            } catch (error) {
+                showNotification('Error al cargar productos: ' + error.message, 'error');
+            }
+        }
+
+        function renderProducts(products) {
+            const tbody = document.getElementById('products-table');
+            const noProducts = document.getElementById('no-products');
+
+            if (!products || products.length === 0) {
+                tbody.innerHTML = '';
+                noProducts.classList.remove('hidden');
+                return;
+
+            }
+            noProducts.classList.add('hidden');
+
+            tbody.innerHTML = products.map(product => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${product.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">$${parseFloat(product.price).toFixed(2)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${product.description || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatDate(product.created_at)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                        <button onclick="editProduct(${product.id})" class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</button>
+                        <button onclick="deleteProduct(${product.id})" class="text-red-600 hover:text-red-900">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        //crear producto
+        async function createProduct() {
+            const data = getFormData();
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(
+                        data
+                    )
+                });
+                const result = await response.json();
+
+                if (result.status === 200) {
+                    showNotification('Producto creado exitosamente', 'success');
+                    resetForm();
+                    loadProducts();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+
+            } catch (error) {
+                showNotification('Error al crear producto: ' + error.message, 'error');
+            }
+        }
+
+        //EDITAR-cargar datos en el formulario
+        async function editProduct(id) {
+            try {
+                const response = await fetch(`${API_URL}/${id}`);
+                const result = await response.json();
+
+                if (result.status === 200) {
+                    const product = result.data;
+                    document.getElementById('product-id').value = product.id;
+                    document.getElementById('name').value = product.name;
+                    document.getElementById('price').value = product.price;
+                    document.getElementById('description').value = product.description || '';
+
+                    document.getElementById('form-title').innerText = 'Editar producto';
+                    document.getElementById('btn-submit').innerText = 'Actualizar';
+                    document.getElementById('btn-cancel').classList.remove('hidden');
+
+                    document.getElementById('product-form').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                } else {
+                    showNotification(result.message, 'error');
+                }
+
+            } catch (error) {
+                showNotification('Error al cargar producto: ' + error.message, 'error');
+            }
+        }
+    </script>
 
 </body>
 
