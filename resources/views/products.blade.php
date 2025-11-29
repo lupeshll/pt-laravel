@@ -194,6 +194,36 @@
                 showNotification('Error al cargar producto: ' + error.message, 'error');
             }
         }
+
+        //Actualizar producto
+        async function updateProduct(id) {
+            const data = getFormData();
+
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(
+                        data
+                    )
+                });
+                const result = await response.json();
+
+                if (result.status === 200) {
+                    showNotification('Producto actualizado exitosamente', 'success');
+                    resetForm();
+                    loadProducts();
+                } else {
+                    showNotification(result.message, 'error');
+                }
+
+            } catch (error) {
+                showNotification('Error al actualizar producto: ' + error.message, 'error');
+            }
+        }
     </script>
 
 </body>
