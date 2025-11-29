@@ -71,7 +71,7 @@ class ProductController extends Controller
             }
 
             $now = now()->format('Y-m-d H:i:s');
-            DB::insert('insert into products (name, price, description, created_at, updated_at) values (?, ?, ?, NOW(), NOW())', [$request->name, $request->price, $request->description, $now, $now]);
+            DB::insert('insert into products (name, price, description, created_at, updated_at) values (?, ?, ?, ?, ?)', [$request->name, $request->price, $request->description, $now, $now]);
 
             $id      = DB::getPdo()->lastInsertId();
             $product = DB::select('select * from products where id = ?', [$id]);
