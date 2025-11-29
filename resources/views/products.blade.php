@@ -11,67 +11,89 @@
 </head>
 
 <body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="md-8">
+            <h1 class="text-3x1 font-bold text-gray-800 text-center">Gestión de productos</h1>
+        </header>
+        <div id="notification" class="hidden mb-4 p-4 rounded-lg text-center font-medium">
+            <!-- Las notificaciones se mostrarán aquí -->
+        </div>
 
-    <header class="md-8">
-        <h1>Gestión de productos</h1>
-    </header>
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 id="form-title" class="text-xl font-semibold text-gray-700 mb-4">Crear nuevo producto</h2>
-        <form id='product-form' class="space-y-4">
-            <input type="hidden" id="product-id" value="">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del
-                        producto *</label>
-                    <input type="text" id="name" required>
+        <!-- Formulario de creación/edición de productos -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 id="form-title" class="text-xl font-semibold text-gray-700 mb-4">Crear nuevo producto</h2>
+            <form id='product-form' class="space-y-4">
+                <input type="hidden" id="product-id" value="">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre del
+                            producto *</label>
+                        <input type="text" id="name" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:right-2 focus:right-blue-500 focus:border-transparent"
+                            placeholder="Ingrese nombre del producto">
+                    </div>
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
+                        <input type="number" id="price" step="0.01" min="0" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:right-2 focus:right-blue-500 focus:border-transparent"
+                            placeholder="0.00">
+                    </div>
+
                 </div>
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Precio *</label>
-                    <input type="number" id="price" step="0.01" min="0" required>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción del
+                        producto</label>
+                    <textarea id="description" name="description" rows="3"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:right-2 focus:right-blue-500 focus:border-transparent"
+                        placeholder="Ingrese una descripción (opcional)"></textarea>
+
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit" id="btn-submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200">Guardar</button>
+                    <button type="button" id="btn-cancel" onclick="cancelEdit()"
+                        class="hidden bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition duration-200 ">Cancelar</button>
                 </div>
 
-            </div>
-            <div>
-                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción del
-                    producto</label>
-                <textarea id="description" name="description" rows="3"></textarea>
+            </form>
+        </div>
 
+        <!-- Tabla de productos -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-700">Lista de productos</h2>
             </div>
-            <div class="flex gap-2">
-                <button type="submit" id="btn-submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-200">Guardar</button>
-                <button type="button" id="btn-cancel" onclick="cancelEdit()"
-                    class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition duration-200 hidden">Cancelar</button>
+            <div class="overflow-x-auto ">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">ID
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">Nombre
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">Precio
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">
+                                Descripción</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">Fecha
+                                creación
+                            </th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-500 uppercase tracking-wider">
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table">
+                        <!-- Las filas de productos se agregarán aquí dinámicamente -->
+                    </tbody>
+                </table>
             </div>
-
-        </form>
-    </div>
-
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <div>
-            <table class="w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">Nombre
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">Precio
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">
-                            Descripción</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-500 uppercase tracking-wider">Fecha
-                            creación
-                        </th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-500 uppercase tracking-wider">Acciones
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="products-table">
-                    <!-- Las filas de productos se agregarán aquí dinámicamente -->
-                </tbody>
-            </table>
+            <div id="no-products" class="hidden g-8 text-center text-gray-500">
+                No hay productos registrados. Crea uno nuevo usando el formulario de arriba.
+            </div>
         </div>
     </div>
+
 
     <script>
         const API_URL = '/api/products';
@@ -268,7 +290,7 @@
 
         //Resetear formulario
         function resetForm() {
-            document.getElementById('product-name').reset();
+            document.getElementById('product-form').reset();
             document.getElementById('product-id').value = '';
 
             document.getElementById('form-title').textContent = 'Crear nuevo producto';
@@ -291,8 +313,31 @@
                 notification.classList.add('hidden');
             }, 4000);
         }
+
+        // Formatear fecha
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        //
+        function scapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 
 </body>
+
 
 </html>
